@@ -20,7 +20,7 @@ Storage.prototype.add = function(name) {
 Storage.prototype.delete = function(num) {
   for(var i = 0; i < this.items.length; i++){
     if(this.items[i]['id'] == num){
-      return this.items.splice(i, 1)
+      return this.items.splice(i, 1);
     }
   }
 }
@@ -32,8 +32,7 @@ Storage.prototype.edit = function(obj){
       this.items[i] = obj;
       return this.items[i];
     }
-  }
-  
+  } 
 }
 
 var storage = new Storage();
@@ -45,6 +44,7 @@ var app = express();
 app.use(express.static('public'));
 
 app.get('/items', function(req, res) {
+    
     res.json(storage.items);
 });
 
@@ -55,28 +55,28 @@ app.delete('/items/:id', jsonParser, function(req, res){
     return res.sendStatus(400);
   }
 
-  var item = storage.delete(req.params.id)
-  res.status(201).json(item)
+  var item = storage.delete(req.params.id);
+  res.status(201).json(item);
   
 });
 
 app.put('/items/:id', jsonParser, function(req, res){
   
   var idExists = false;
-  var reqID = req.body.id
   
   storage.items.forEach(function(item){
-    if(item.id == req.body.id){
+    if(item.id == req.params.id){
       idExists = true;
+      res.json(storage.edit(req.body));
     }
-  })
+  });
+
   
   if(!idExists){
-    res.send(storage.add(req.body.id))
-  }else{
-    res.send(storage.edit(req.body))
-  }    
-})
+    res.send(storage.add(req.body.name));
+  }
+      
+});
 
 
 app.post('/items', jsonParser, function(req, res){
@@ -84,8 +84,23 @@ app.post('/items', jsonParser, function(req, res){
     return res.sendStatus(400);
   }
   var item = storage.add(req.body.name);
-  console.log(req);
   res.status(201).json(item);
-})
+});
 
 app.listen(process.env.PORT || 8080);
+
+
+
+
+
+
+exports.app = app;
+exports.storage = storage;
+
+
+
+
+
+
+
+
